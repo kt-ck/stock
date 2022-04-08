@@ -51,37 +51,26 @@ def getNameFromCode(query_name):
 
 
 def getLabel():
-    return ['price', 'gain', 'rate', 'volume', 'turnover', 'market value']
-
-
-def getBeginIndexFromTencent():
-    return 3
+    return ['股票代码', '当前价格', '昨收', '开盘', '成交量', '外盘', '内盘', '涨跌', '涨跌%', '最高', '最低', '成交额', '换手率', 'ttm市盈率', '振幅', '流通市值', '总市值', 'if市净率', '量比', '均价', '动态市盈率', '静态市盈率']
 
 
 def getDataFromTencent(query_name):
-    # 股票名字, 代码， 当前价格，涨跌，涨跌率，成交量，成交额，总市值
-    res = requests.get("https://qt.gtimg.cn/q=s_"+query_name)
+    res = requests.get("https://qt.gtimg.cn/q="+query_name)
     text = res.content.decode("gbk")
     text_list = text.split('"')[1].split("~")
+    text_list = [each for each in text_list if each != "" and each != " "]
 
-    label_list = getLabel()
-
-    market, _ = splitQueryName(query_name)
-    if market == 'sz' or market == 'sh':
-        endIndex = len(text_list)-1
-    elif market == 'hk':
-        endIndex = len(text_list)
-
-    text_list = [text_list[index]
-                 for index in range(getBeginIndexFromTencent(), endIndex) if text_list[index] != ""]
+    index_list = [2, 3, 4, 5, 6, 7, 8, 30, 31, 32, 33, 36,
+                  37, 38, 41, 42, 43, 44, 47, 49, 50, 51]
     obj = {}
-
-    if len(label_list) == len(text_list):
-        for i in range(len(label_list)):
-            obj[label_list[i]] = text_list[i]
+    if len(text_list) > len(index_list):
+        label_list = getLabel()
+        for index in range(len(index_list)):
+            obj[label_list[index]] = text_list[index_list[index]]
         obj["state"] = True
     else:
         obj["state"] = False
+
     return obj
 
 
@@ -91,4 +80,4 @@ def getDate():
 
 
 if __name__ == "__main__":
-    print(getNameFromCode('BABA.N'))
+    getDataFromTencent('sh600519')
