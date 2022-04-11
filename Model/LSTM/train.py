@@ -40,7 +40,7 @@ dataset_train = pd.read_csv(csv_path,encoding='gbk')
 # use open stock column, choose right col
 training_set = dataset_train[col_name].values
 
-scaler = MinMaxScaler(feature_range=(-10, 10))
+scaler = MinMaxScaler(feature_range=(0, 20))
 scaled_training_set = scaler.fit_transform(training_set)
 
 X_train = []
@@ -57,6 +57,8 @@ y_train = np.array(y_train)
 print(X_train.shape)
 print(y_train.shape)
 
+np.save("X_train.npy",X_train)
+np.save("y_train.npy",y_train)
 
 regressor = Sequential()
 regressor.add(LSTM(units=80, return_sequences=True))
